@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -47,7 +48,11 @@ const ArticleEditor = () => {
     }
     
     const loadArticle = async () => {
-      if (isNewArticle) return;
+      if (isNewArticle) {
+        // Fix: Ensure loading state is false for new articles
+        setIsLoading(false);
+        return;
+      }
       
       if (!id) return;
       
@@ -79,6 +84,7 @@ const ArticleEditor = () => {
     setIsSaving(false);
     
     if (savedArticle) {
+      toast.success(language === 'en' ? 'Article saved successfully' : 'تم حفظ المقال بنجاح');
       if (isNewArticle) {
         navigate(`/admin/edit/${savedArticle.id}`);
       }

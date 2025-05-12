@@ -54,6 +54,9 @@ export async function fetchArticleById(id: string): Promise<Article | null> {
 
 export async function createOrUpdateArticle(article: Partial<Article>): Promise<Article | null> {
   try {
+    // Debug log to track article content
+    console.log('Saving article:', article);
+    
     if (article.id) {
       // Update existing article
       const { data, error } = await supabase
