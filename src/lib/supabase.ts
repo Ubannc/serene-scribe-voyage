@@ -1,8 +1,9 @@
 
-import { createClient } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/sonner';
+import { supabase } from '@/integrations/supabase/client';
+import type { Tables } from '@/integrations/supabase/types';
 
-// Types for our database tables
+// Define a type for articles based on the generated Supabase types
 export type Article = {
   id: string;
   created_at: string;
@@ -16,13 +17,6 @@ export type Article = {
   thumbnail_url: string | null;
   tags: string[] | null;
 };
-
-// Initialize Supabase client with environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-// Create the Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Helper functions
 export async function fetchArticles(onlyPublished = true): Promise<Article[]> {
@@ -41,7 +35,20 @@ export async function fetchArticles(onlyPublished = true): Promise<Article[]> {
       return [];
     }
     
-    return data || [];
+    // Map the database schema to our frontend Article type
+    return (data || []).map(article => ({
+      id: article.id,
+      created_at: article.created_at || new Date().toISOString(),
+      updated_at: article.updated_at || new Date().toISOString(),
+      title_en: article.title || '',
+      title_ar: article.title_ar || '',
+      content_en: article.content || '',
+      content_ar: article.content_ar || '',
+      published: true, // Default to published for existing articles
+      published_at: article.created_at || new Date().toISOString(),
+      thumbnail_url: null,
+      tags: []
+    }));
   } catch (error) {
     console.error('Exception fetching articles:', error);
     toast.error('Failed to load articles');
@@ -63,7 +70,22 @@ export async function fetchArticleById(id: string): Promise<Article | null> {
       return null;
     }
     
-    return data;
+    if (!data) return null;
+    
+    // Map the database schema to our frontend Article type
+    return {
+      id: data.id,
+      created_at: data.created_at || new Date().toISOString(),
+      updated_at: data.updated_at || new Date().toISOString(),
+      title_en: data.title || '',
+      title_ar: data.title_ar || '',
+      content_en: data.content || '',
+      content_ar: data.content_ar || '',
+      published: true, // Default to published for existing articles
+      published_at: data.created_at || new Date().toISOString(),
+      thumbnail_url: null,
+      tags: []
+    };
   } catch (error) {
     console.error('Exception fetching article:', error);
     toast.error('Failed to load article');
@@ -78,14 +100,10 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
       const { data, error } = await supabase
         .from('articles')
         .update({
-          title_en: article.title_en,
+          title: article.title_en,
           title_ar: article.title_ar,
-          content_en: article.content_en,
+          content: article.content_en,
           content_ar: article.content_ar,
-          published: article.published,
-          published_at: article.published ? new Date().toISOString() : article.published_at,
-          thumbnail_url: article.thumbnail_url,
-          tags: article.tags,
           updated_at: new Date().toISOString(),
         })
         .eq('id', article.id)
@@ -99,21 +117,32 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
       }
       
       toast.success('Article updated successfully');
-      return data;
+      // Return the updated article with our frontend Article type structure
+      return {
+        id: data.id,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString(),
+        title_en: data.title || '',
+        title_ar: data.title_ar || '',
+        content_en: data.content || '',
+        content_ar: data.content_ar || '',
+        published: true,
+        published_at: data.created_at || new Date().toISOString(),
+        thumbnail_url: null,
+        tags: []
+      };
     } else {
       // Create new article
       const { data, error } = await supabase
         .from('articles')
         .insert([
           {
-            title_en: article.title_en || '',
+            title: article.title_en || '',
             title_ar: article.title_ar || '',
-            content_en: article.content_en || '',
+            content: article.content_en || '',
             content_ar: article.content_ar || '',
-            published: article.published || false,
-            published_at: article.published ? new Date().toISOString() : null,
-            thumbnail_url: article.thumbnail_url || null,
-            tags: article.tags || [],
+            english_text: article.title_en || '', // Required field in the database
+            arabic_text: article.title_ar || '', // Required field in the database
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           },
@@ -128,7 +157,20 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
       }
       
       toast.success('Article created successfully');
-      return data;
+      // Return the created article with our frontend Article type structure
+      return {
+        id: data.id,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString(),
+        title_en: data.title || '',
+        title_ar: data.title_ar || '',
+        content_en: data.content || '',
+        content_ar: data.content_ar || '',
+        published: true,
+        published_at: data.created_at || new Date().toISOString(),
+        thumbnail_url: null,
+        tags: []
+      };
     }
   } catch (error) {
     console.error('Exception creating/updating article:', error);
