@@ -7,14 +7,14 @@ import { Button } from '@/components/ui/button';
 import { fetchArticleById, Article } from '@/lib/supabase';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ArticlePage = () => {
   const { id } = useParams<{ id: string }>();
   const [article, setArticle] = useState<Article | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { language, isRTL } = useLanguage();
+  const { language, isRTL, toggleLanguage } = useLanguage();
   const { isAdmin } = useAuth();
   
   useEffect(() => {
@@ -74,58 +74,80 @@ const ArticlePage = () => {
   );
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#FEF7CD]">
       <Header />
       
-      <main className="flex-grow container max-w-3xl mx-auto px-4 py-8">
+      <main className="flex-grow container max-w-3xl mx-auto px-4 py-12">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-6"
+          className="relative bg-white rounded-lg shadow-lg p-8 md:p-12"
         >
-          <Link to="/" className="inline-flex items-center text-sm mb-8 hover:text-primary transition-colors">
-            <ArrowLeft className={`h-4 w-4 ${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
-            <span className={isRTL ? 'font-amiri' : 'font-serif'}>
-              {language === 'en' ? 'Back to articles' : 'العودة إلى المقالات'}
-            </span>
-          </Link>
-          
-          {isAdmin && (
-            <Link to={`/admin/edit/${article.id}`} className="float-right">
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-1" />
-                {language === 'en' ? 'Edit' : 'تعديل'}
-              </Button>
+          <div className="mb-8 flex justify-between items-center">
+            <Link to="/" className="inline-flex items-center text-sm mb-4 hover:text-primary transition-colors">
+              <ArrowLeft className={`h-4 w-4 ${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
+              <span className={isRTL ? 'font-amiri' : 'font-serif'}>
+                {language === 'en' ? 'Back to articles' : 'العودة إلى المقالات'}
+              </span>
             </Link>
-          )}
+            
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleLanguage}
+                className="flex items-center"
+              >
+                <Globe className="h-4 w-4 mr-1" />
+                {language === 'en' ? 'العربية' : 'English'}
+              </Button>
+              
+              {isAdmin && (
+                <Link to={`/admin/edit/${article.id}`}>
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-1" />
+                    {language === 'en' ? 'Edit' : 'تعديل'}
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
           
-          <div className="mb-2 text-sm text-gray-500">
+          <div className="mb-6 text-sm text-gray-500 border-b pb-4">
             <time className={isRTL ? 'font-amiri' : 'font-serif'}>
               {formattedDate}
             </time>
           </div>
           
-          <h1 className={`text-4xl lg:text-5xl mb-8 ${isRTL ? 'font-amiri' : 'font-serif'}`}>
+          <h1 className={`text-4xl lg:text-5xl mb-8 leading-tight ${isRTL ? 'font-amiri text-right' : 'font-serif'}`}>
             {title}
           </h1>
-        </motion.div>
-        
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
-          <div 
-            className={`prose ${language === 'en' ? 'en' : 'ar'}`}
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
+          
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <div 
+              className={`prose max-w-none ${language === 'en' ? 'en' : 'ar'}`}
+              style={{
+                lineHeight: '1.8',
+                fontSize: '1.125rem',
+                textAlign: isRTL ? 'right' : 'left',
+                direction: isRTL ? 'rtl' : 'ltr',
+                letterSpacing: language === 'en' ? '0.01em' : 'normal',
+                fontFamily: isRTL ? 'Amiri, serif' : 'Merriweather, Georgia, serif',
+              }}
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </motion.div>
         </motion.div>
       </main>
       
       <Footer />
     </div>
   );
-};
+}
 
 export default ArticlePage;

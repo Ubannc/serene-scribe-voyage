@@ -88,11 +88,52 @@
   
   .prose.ar {
     @apply text-right leading-relaxed text-lg;
-    line-height: 1.8;
+    line-height: 2;
+    letter-spacing: 0.01em;
   }
   
   .prose.en {
     @apply text-left leading-relaxed text-lg;
     line-height: 1.8;
+    letter-spacing: 0.02em;
+  }
+  
+  /* Book-style typography enhancements */
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    @apply font-bold mb-4;
+  }
+  
+  .prose p {
+    @apply mb-6;
+  }
+  
+  .prose.ar p {
+    text-align: justify;
+    font-size: 1.2rem;
+  }
+  
+  .prose.en p {
+    text-align: justify;
+    font-size: 1.1rem;
+  }
+  
+  .prose a {
+    @apply text-primary underline underline-offset-4 hover:text-primary/80 transition-colors;
+  }
+  
+  .prose blockquote {
+    @apply pl-4 border-l-4 border-primary/20 italic my-6;
+  }
+  
+  .prose ul, .prose ol {
+    @apply my-6 pl-6;
+  }
+  
+  .prose li {
+    @apply mb-2;
+  }
+  
+  .prose img {
+    @apply rounded-md shadow-md my-6;
   }
 }
