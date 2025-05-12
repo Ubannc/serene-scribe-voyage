@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -18,7 +17,7 @@ const Index = () => {
   useEffect(() => {
     const loadArticles = async () => {
       setIsLoading(true);
-      const data = await fetchArticles(true);
+      const data = await fetchArticles();
       setArticles(data);
       setFilteredArticles(data);
       setIsLoading(false);

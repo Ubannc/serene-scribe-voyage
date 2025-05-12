@@ -13,6 +13,8 @@ export type Article = {
   content_ar: string;
   thumbnail_url: string | null;
   tags: string[] | null;
+  published: boolean;
+  published_at: string | null;
 };
 
 // Define a type for database article to match Supabase schema
@@ -37,7 +39,7 @@ export type GalleryItem = {
 };
 
 // Helper functions for articles
-export async function fetchArticles(): Promise<Article[]> {
+export async function fetchArticles(includeUnpublished: boolean = false): Promise<Article[]> {
   try {
     // Use explicit typing to avoid excessive type instantiation
     const { data, error } = await supabase
@@ -281,6 +283,8 @@ function mapDbArticleToArticle(dbArticle: any): Article {
     content_en: dbArticle.content || '',
     content_ar: dbArticle.content_ar || '',
     thumbnail_url: null,
-    tags: []
+    tags: [],
+    published: true, // Default to published since the DB doesn't have this field yet
+    published_at: dbArticle.created_at || new Date().toISOString() // Use created_at as published_at
   };
 }

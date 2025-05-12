@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -33,7 +32,6 @@ const ArticleEditor = () => {
     title_ar: '',
     content_en: '',
     content_ar: '',
-    published: false,
   });
   const [isLoading, setIsLoading] = useState(!isNewArticle);
   const [isSaving, setIsSaving] = useState(false);
@@ -111,17 +109,6 @@ const ArticleEditor = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 mr-4">
-              <Switch
-                id="published"
-                checked={article.published}
-                onCheckedChange={(checked) => setArticle({ ...article, published: checked })}
-              />
-              <Label htmlFor="published" className={isRTL ? 'font-amiri' : 'font-serif'}>
-                {language === 'en' ? 'Published' : 'منشور'}
-              </Label>
-            </div>
-            
             <Button 
               onClick={handleSave} 
               disabled={isSaving}

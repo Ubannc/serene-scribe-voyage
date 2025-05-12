@@ -68,7 +68,7 @@ const ArticlePage = () => {
   const title = language === 'en' ? article.title_en : article.title_ar;
   
   // Format the date based on the language
-  const formattedDate = new Date(article.published_at || article.created_at).toLocaleDateString(
+  const formattedDate = new Date(article.created_at).toLocaleDateString(
     language === 'en' ? 'en-US' : 'ar-SA',
     { year: 'numeric', month: 'long', day: 'numeric' }
   );
