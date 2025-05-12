@@ -1,9 +1,8 @@
 
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/integrations/supabase/client';
-import type { Tables } from '@/integrations/supabase/types';
 
-// Define a type for articles based on the generated Supabase types
+// Define a type for articles with explicit types to avoid excessive type instantiation
 export type Article = {
   id: string;
   created_at: string;
@@ -16,6 +15,17 @@ export type Article = {
   published_at: string | null;
   thumbnail_url: string | null;
   tags: string[] | null;
+};
+
+// Define a type for database article to match Supabase schema
+type DbArticle = {
+  id: string;
+  created_at?: string | null;
+  updated_at?: string | null;
+  title?: string;
+  title_ar?: string | null;
+  content?: string;
+  content_ar?: string | null;
 };
 
 // Helper functions
