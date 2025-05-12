@@ -1,6 +1,6 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Article } from '@/lib/supabase';
+import { Article } from '@/lib/types';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
