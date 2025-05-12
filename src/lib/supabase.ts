@@ -36,19 +36,7 @@ export async function fetchArticles(onlyPublished = true): Promise<Article[]> {
     }
     
     // Map the database schema to our frontend Article type
-    return (data || []).map(article => ({
-      id: article.id,
-      created_at: article.created_at || new Date().toISOString(),
-      updated_at: article.updated_at || new Date().toISOString(),
-      title_en: article.title || '',
-      title_ar: article.title_ar || '',
-      content_en: article.content || '',
-      content_ar: article.content_ar || '',
-      published: true, // Default to published for existing articles
-      published_at: article.created_at || new Date().toISOString(),
-      thumbnail_url: null,
-      tags: []
-    }));
+    return (data || []).map(article => mapDbArticleToArticle(article));
   } catch (error) {
     console.error('Exception fetching articles:', error);
     toast.error('Failed to load articles');
@@ -73,19 +61,7 @@ export async function fetchArticleById(id: string): Promise<Article | null> {
     if (!data) return null;
     
     // Map the database schema to our frontend Article type
-    return {
-      id: data.id,
-      created_at: data.created_at || new Date().toISOString(),
-      updated_at: data.updated_at || new Date().toISOString(),
-      title_en: data.title || '',
-      title_ar: data.title_ar || '',
-      content_en: data.content || '',
-      content_ar: data.content_ar || '',
-      published: true, // Default to published for existing articles
-      published_at: data.created_at || new Date().toISOString(),
-      thumbnail_url: null,
-      tags: []
-    };
+    return mapDbArticleToArticle(data);
   } catch (error) {
     console.error('Exception fetching article:', error);
     toast.error('Failed to load article');
@@ -118,19 +94,7 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
       
       toast.success('Article updated successfully');
       // Return the updated article with our frontend Article type structure
-      return {
-        id: data.id,
-        created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString(),
-        title_en: data.title || '',
-        title_ar: data.title_ar || '',
-        content_en: data.content || '',
-        content_ar: data.content_ar || '',
-        published: true,
-        published_at: data.created_at || new Date().toISOString(),
-        thumbnail_url: null,
-        tags: []
-      };
+      return mapDbArticleToArticle(data);
     } else {
       // Create new article
       const { data, error } = await supabase
@@ -158,19 +122,7 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
       
       toast.success('Article created successfully');
       // Return the created article with our frontend Article type structure
-      return {
-        id: data.id,
-        created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString(),
-        title_en: data.title || '',
-        title_ar: data.title_ar || '',
-        content_en: data.content || '',
-        content_ar: data.content_ar || '',
-        published: true,
-        published_at: data.created_at || new Date().toISOString(),
-        thumbnail_url: null,
-        tags: []
-      };
+      return mapDbArticleToArticle(data);
     }
   } catch (error) {
     console.error('Exception creating/updating article:', error);
@@ -231,4 +183,21 @@ export async function uploadImage(file: File): Promise<string | null> {
     toast.error('Failed to upload image');
     return null;
   }
+}
+
+// Helper function to map database article to our frontend Article type
+function mapDbArticleToArticle(dbArticle: any): Article {
+  return {
+    id: dbArticle.id,
+    created_at: dbArticle.created_at || new Date().toISOString(),
+    updated_at: dbArticle.updated_at || new Date().toISOString(),
+    title_en: dbArticle.title || '',
+    title_ar: dbArticle.title_ar || '',
+    content_en: dbArticle.content || '',
+    content_ar: dbArticle.content_ar || '',
+    published: true, // Default to published for existing articles
+    published_at: dbArticle.created_at || new Date().toISOString(),
+    thumbnail_url: null,
+    tags: []
+  };
 }
