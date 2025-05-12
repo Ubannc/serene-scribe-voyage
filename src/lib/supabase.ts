@@ -1,4 +1,3 @@
-
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -31,13 +30,10 @@ type DbArticle = {
 // Helper functions
 export async function fetchArticles(onlyPublished = true): Promise<Article[]> {
   try {
-    let query = supabase.from('articles').select('*');
-    
-    if (onlyPublished) {
-      query = query.eq('published', true);
-    }
-    
-    const { data, error } = await query.order('published_at', { ascending: false });
+    // Use explicit typing to avoid excessive type instantiation
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*');
     
     if (error) {
       console.error('Error fetching articles:', error);
