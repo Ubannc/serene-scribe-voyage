@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, LogOut, FileText, ImageIcon } from 'lucide-react';
 import { AdminGallery } from '@/components/AdminGallery';
+import { AdminArticlesList } from '@/components/AdminArticlesList';
 
 export default function AdminDashboard() {
   const { logout } = useAuth();
@@ -79,7 +80,7 @@ export default function AdminDashboard() {
                 </Link>
               </div>
               
-              {/* Articles list component would go here */}
+              <AdminArticlesList />
             </div>
           ) : (
             <AdminGallery />
