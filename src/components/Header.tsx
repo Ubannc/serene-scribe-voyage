@@ -1,5 +1,5 @@
 
-import { Pen } from 'lucide-react';
+import { Pen, Image } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
@@ -18,6 +18,16 @@ export function Header() {
         </Link>
         
         <div className="flex items-center space-x-4">
+          <Link to="/gallery">
+            <Button 
+              variant="ghost" 
+              className="text-sm font-medium hover:bg-black/5 flex items-center"
+            >
+              <Image className="h-4 w-4 mr-1" />
+              {language === 'en' ? 'Gallery' : 'معرض الصور'}
+            </Button>
+          </Link>
+          
           <Button 
             variant="ghost" 
             onClick={toggleLanguage} 

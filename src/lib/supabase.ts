@@ -1,3 +1,4 @@
+
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -10,8 +11,6 @@ export type Article = {
   title_ar: string;
   content_en: string;
   content_ar: string;
-  published: boolean;
-  published_at: string | null;
   thumbnail_url: string | null;
   tags: string[] | null;
 };
@@ -19,21 +18,32 @@ export type Article = {
 // Define a type for database article to match Supabase schema
 type DbArticle = {
   id: string;
-  created_at?: string | null;
-  updated_at?: string | null;
-  title?: string;
-  title_ar?: string | null;
-  content?: string;
-  content_ar?: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  title: string;
+  title_ar: string | null;
+  content: string;
+  content_ar: string | null;
+  english_text: string;
+  arabic_text: string;
 };
 
-// Helper functions
-export async function fetchArticles(onlyPublished = true): Promise<Article[]> {
+// Define a type for gallery items
+export type GalleryItem = {
+  id: string;
+  title: string;
+  url: string;
+  date: string | null;
+};
+
+// Helper functions for articles
+export async function fetchArticles(): Promise<Article[]> {
   try {
     // Use explicit typing to avoid excessive type instantiation
     const { data, error } = await supabase
       .from('articles')
-      .select('*');
+      .select('*')
+      .order('created_at', { ascending: false });
     
     if (error) {
       console.error('Error fetching articles:', error);
@@ -86,6 +96,8 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
           title_ar: article.title_ar,
           content: article.content_en,
           content_ar: article.content_ar,
+          english_text: article.title_en || '', // Required field in the database
+          arabic_text: article.title_ar || '', // Required field in the database
           updated_at: new Date().toISOString(),
         })
         .eq('id', article.id)
@@ -166,14 +178,14 @@ export async function verifyAdminToken(token: string): Promise<boolean> {
   return token === validToken;
 }
 
-export async function uploadImage(file: File): Promise<string | null> {
+export async function uploadImage(file: File, bucket: string = 'media'): Promise<string | null> {
   try {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-    const filePath = `thumbnails/${fileName}`;
+    const filePath = bucket === 'gallery' ? `${fileName}` : `thumbnails/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('media')
+      .from(bucket)
       .upload(filePath, file);
 
     if (uploadError) {
@@ -182,12 +194,79 @@ export async function uploadImage(file: File): Promise<string | null> {
       return null;
     }
 
-    const { data } = supabase.storage.from('media').getPublicUrl(filePath);
+    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
     return data.publicUrl;
   } catch (error) {
     console.error('Exception uploading image:', error);
     toast.error('Failed to upload image');
     return null;
+  }
+}
+
+// Gallery functions
+export async function fetchGalleryItems(): Promise<GalleryItem[]> {
+  try {
+    const { data, error } = await supabase
+      .from('gallery')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching gallery items:', error);
+      toast.error('Failed to load gallery');
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Exception fetching gallery:', error);
+    toast.error('Failed to load gallery');
+    return [];
+  }
+}
+
+export async function createGalleryItem(title: string, url: string): Promise<GalleryItem | null> {
+  try {
+    const { data, error } = await supabase
+      .from('gallery')
+      .insert([{ title, url, date: new Date().toISOString() }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating gallery item:', error);
+      toast.error('Failed to add gallery item');
+      return null;
+    }
+
+    toast.success('Gallery item added successfully');
+    return data;
+  } catch (error) {
+    console.error('Exception creating gallery item:', error);
+    toast.error('Failed to add gallery item');
+    return null;
+  }
+}
+
+export async function deleteGalleryItem(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('gallery')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting gallery item:', error);
+      toast.error('Failed to delete gallery item');
+      return false;
+    }
+
+    toast.success('Gallery item deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('Exception deleting gallery item:', error);
+    toast.error('Failed to delete gallery item');
+    return false;
   }
 }
 
@@ -201,8 +280,6 @@ function mapDbArticleToArticle(dbArticle: any): Article {
     title_ar: dbArticle.title_ar || '',
     content_en: dbArticle.content || '',
     content_ar: dbArticle.content_ar || '',
-    published: true, // Default to published for existing articles
-    published_at: dbArticle.created_at || new Date().toISOString(),
     thumbnail_url: null,
     tags: []
   };

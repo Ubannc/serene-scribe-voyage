@@ -14,6 +14,7 @@ import Index from "./pages/Index";
 import ArticlePage from "./pages/ArticlePage";
 import AdminDashboard from "./pages/AdminDashboard";
 import ArticleEditor from "./pages/ArticleEditor";
+import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/article/:id" element={<ArticlePage />} />
+                <Route path="/gallery" element={<Gallery />} />
                 <Route
                   path="/admin"
                   element={
