@@ -23,6 +23,10 @@ export default {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
 				serif: ['Merriweather', 'Georgia', 'serif'],
 				amiri: ['Amiri', 'serif'],
+				cairo: ['Cairo', 'sans-serif'],
+			},
+			scale: {
+				'102': '1.02',
 			},
 			colors: {
 				border: 'hsl(var(--border))',

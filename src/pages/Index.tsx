@@ -1,15 +1,13 @@
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { ArticleCard } from '@/components/ArticleCard';
 import { fetchArticles, Article } from '@/lib/supabase';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Search, ArrowRight } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { AnimatedBackground } from '@/components/AnimatedBackground';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 
@@ -49,23 +47,27 @@ const Index = () => {
     setFilteredArticles(filtered);
   }, [searchQuery, articles]);
   
-  // Get the featured article (first article or null if none)
-  const featuredArticle = articles.length > 0 ? articles[0] : null;
-  
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative bg-white">
       <AnimatedBackground />
       
       <Header />
       
-      <main className="flex-grow container max-w-5xl mx-auto px-4 py-8 animate-fade-in relative z-10">
+      <main className="flex-grow container max-w-5xl mx-auto px-4 py-12 animate-fade-in relative z-10">
         {/* Featured Article Carousel */}
         {articles.length > 0 && (
-          <FeaturedCarousel articles={articles} />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="mb-16"
+          >
+            <FeaturedCarousel articles={articles} />
+          </motion.div>
         )}
         
         <div className="mb-12 text-center mt-16">
-          <h1 className="text-4xl font-medium mb-3 font-serif">
+          <h1 className="text-4xl font-medium mb-6 font-serif">
             Articles
           </h1>
           
@@ -76,7 +78,7 @@ const Index = () => {
               placeholder="Search articles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 glass"
+              className="pl-10 backdrop-blur-sm bg-white/60 border border-gray-200"
             />
           </div>
         </div>

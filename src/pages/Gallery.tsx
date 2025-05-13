@@ -37,7 +37,7 @@ export default function Gallery() {
   };
   
   return (
-    <div className="min-h-screen en">
+    <div className="min-h-screen en bg-white">
       <AnimatedBackground />
       <Header />
       
@@ -45,7 +45,7 @@ export default function Gallery() {
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-4xl mb-8 font-bold text-center font-serif"
+          className="text-4xl mb-12 font-bold text-center font-serif"
         >
           Image Gallery
         </motion.h1>
@@ -61,32 +61,34 @@ export default function Gallery() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {galleryItems.map((item, index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="mesomorphs-glass rounded-lg overflow-hidden hover:scale-105 transition-transform"
+                className="bg-white/60 backdrop-blur-sm rounded-lg overflow-hidden group hover:scale-102 transition duration-300"
               >
                 <div className="relative">
-                  <AspectRatio ratio={16/9} className="bg-gray-100">
+                  <AspectRatio ratio={1} className="bg-gray-100">
                     <img 
                       src={item.url} 
                       alt={item.title} 
                       className="w-full h-full object-cover"
                     />
                   </AspectRatio>
-                  <Button 
-                    size="sm"
-                    variant="secondary"
-                    className="absolute bottom-2 right-2 opacity-80 hover:opacity-100"
-                    onClick={() => handleDownload(item.url, item.title)}
-                  >
-                    <Download className="h-4 w-4 mr-1" />
-                    Download
-                  </Button>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 duration-300">
+                    <Button 
+                      size="sm"
+                      variant="secondary"
+                      className="backdrop-blur-sm bg-white/80 hover:bg-white/90"
+                      onClick={() => handleDownload(item.url, item.title)}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
+                    </Button>
+                  </div>
                 </div>
                 <div className="p-4">
                   <h3 className="font-serif text-xl">

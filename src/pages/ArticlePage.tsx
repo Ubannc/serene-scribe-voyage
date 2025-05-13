@@ -76,13 +76,7 @@ const ArticlePage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative mesomorphs-glass p-8 md:p-12 rounded-lg"
-          style={{
-            boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
-            backdropFilter: 'blur(10px)',
-            background: 'rgba(255, 255, 255, 0.7)',
-            border: '1px solid rgba(255, 255, 255, 0.3)'
-          }}
+          className="relative bg-white/70 backdrop-blur-sm p-8 md:p-12 rounded-lg"
         >
           <div className="mb-8 flex justify-between items-center">
             <Link to="/" className="inline-flex items-center text-sm mb-4 hover:text-primary transition-colors">
