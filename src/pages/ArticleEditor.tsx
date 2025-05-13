@@ -10,21 +10,13 @@ import { fetchArticleById, createOrUpdateArticle } from '@/lib/articles';
 import { Article } from '@/lib/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Calendar, Save, Check } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
-
-// Mock rich text editor component (in a real app, you'd use a proper editor like TinyMCE or Quill)
-const RichTextEditor = ({ value, onChange, dir = 'ltr' }: { value: string, onChange: (value: string) => void, dir?: string }) => {
-  return (
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full min-h-[400px] p-4 border rounded-md font-serif"
-      dir={dir}
-      style={{ lineHeight: 1.8 }}
-    />
-  );
-};
+import RichTextEditor from '@/components/RichTextEditor';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form';
 
 const ArticleEditor = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,8 +27,10 @@ const ArticleEditor = () => {
     content_en: '',
     content_ar: '',
   });
+  const [publishDate, setPublishDate] = useState<Date | undefined>(new Date());
   const [isLoading, setIsLoading] = useState(!isNewArticle);
   const [isSaving, setIsSaving] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
   const { language, isRTL } = useLanguage();
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
@@ -61,6 +55,9 @@ const ArticleEditor = () => {
       const data = await fetchArticleById(id);
       if (data) {
         setArticle(data);
+        // You would set the publish date here if it exists in your data model
+        // setPublishDate(data.publish_date ? new Date(data.publish_date) : undefined);
+        // setIsPublished(!!data.is_published);
       } else {
         toast.error(language === 'en' ? 'Article not found' : 'لم يتم العثور على المقال');
         navigate('/admin');
@@ -81,6 +78,9 @@ const ArticleEditor = () => {
     const savedArticle = await createOrUpdateArticle({
       ...article,
       id: isNewArticle ? undefined : id,
+      // Add publish date and published status when your backend supports it
+      // publish_date: publishDate?.toISOString(),
+      // is_published: isPublished
     });
     setIsSaving(false);
     
@@ -116,15 +116,44 @@ const ArticleEditor = () => {
           </div>
           
           <div className="flex items-center space-x-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {publishDate ? format(publishDate, 'PPP') : language === 'en' ? 'Pick a date' : 'اختر تاريخاً'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <CalendarComponent
+                  mode="single"
+                  selected={publishDate}
+                  onSelect={setPublishDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            
+            <div className="flex items-center gap-2">
+              <Switch
+                id="published"
+                checked={isPublished}
+                onCheckedChange={setIsPublished}
+              />
+              <Label htmlFor="published">
+                {language === 'en' ? 'Publish' : 'نشر'}
+              </Label>
+            </div>
+            
             <Button 
               onClick={handleSave} 
               disabled={isSaving}
               className="bg-primary hover:bg-primary/90"
             >
-              <Save className="h-4 w-4 mr-1" />
               {isSaving 
                 ? (language === 'en' ? 'Saving...' : 'جاري الحفظ...') 
-                : (language === 'en' ? 'Save' : 'حفظ')}
+                : (isPublished 
+                  ? (language === 'en' ? 'Publish' : 'نشر')
+                  : (language === 'en' ? 'Save Draft' : 'حفظ مسودة'))}
             </Button>
           </div>
         </div>
@@ -167,6 +196,8 @@ const ArticleEditor = () => {
                 <RichTextEditor
                   value={article.content_en || ''}
                   onChange={(value) => setArticle({ ...article, content_en: value })}
+                  dir="ltr"
+                  placeholder="Write your article content here..."
                 />
               </div>
             </TabsContent>
@@ -177,6 +208,7 @@ const ArticleEditor = () => {
                   value={article.content_ar || ''}
                   onChange={(value) => setArticle({ ...article, content_ar: value })}
                   dir="rtl"
+                  placeholder="اكتب محتوى مقالتك هنا..."
                 />
               </div>
             </TabsContent>
