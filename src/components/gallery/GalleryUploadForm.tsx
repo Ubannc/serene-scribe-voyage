@@ -4,8 +4,9 @@ import { uploadImage, createGalleryItem } from '@/lib/supabase';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Upload, Loader2 } from 'lucide-react';
+import { Upload, Loader2, Image } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import { cn } from '@/lib/utils';
 
 interface GalleryUploadFormProps {
   onItemAdded: (newItem: any) => void;
@@ -26,12 +27,6 @@ export function GalleryUploadForm({ onItemAdded }: GalleryUploadFormProps) {
         const fileName = e.target.files[0].name.split('.')[0];
         setTitle(fileName);
       }
-    }
-  };
-
-  const handleDirectUpload = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
     }
   };
 
@@ -71,30 +66,19 @@ export function GalleryUploadForm({ onItemAdded }: GalleryUploadFormProps) {
 
   return (
     <div className="mesomorphs-glass p-6 rounded-lg mb-8">
-      <h3 className={`text-xl mb-4 ${isRTL ? 'font-amiri text-right' : 'font-serif'}`}>
+      <h3 className={cn(
+        "text-xl mb-4",
+        isRTL ? "font-amiri text-right" : "font-serif"
+      )}>
         {language === 'en' ? 'Add New Image' : 'إضافة صورة جديدة'}
       </h3>
       
-      <div className="flex justify-center mb-4">
-        <Button 
-          onClick={handleDirectUpload}
-          className="glass-button flex gap-2 items-center"
-        >
-          <Upload className="h-4 w-4" />
-          {language === 'en' ? 'Quick Upload' : 'رفع سريع'}
-        </Button>
-        <input 
-          ref={fileInputRef}
-          type="file"
-          className="hidden"
-          accept="image/*"
-          onChange={handleFileChange}
-        />
-      </div>
-      
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className={`block mb-1 text-sm ${isRTL ? 'font-amiri text-right' : ''}`}>
+          <label className={cn(
+            "block mb-1 text-sm",
+            isRTL ? "font-amiri text-right" : ""
+          )}>
             {language === 'en' ? 'Title' : 'العنوان'}
           </label>
           <Input
@@ -108,22 +92,51 @@ export function GalleryUploadForm({ onItemAdded }: GalleryUploadFormProps) {
         </div>
         
         <div>
-          <label className={`block mb-1 text-sm ${isRTL ? 'font-amiri text-right' : ''}`}>
+          <label className={cn(
+            "block mb-1 text-sm",
+            isRTL ? "font-amiri text-right" : ""
+          )}>
             {language === 'en' ? 'Image' : 'الصورة'}
           </label>
-          <Input
-            id="gallery-file"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="py-2"
-          />
+          <div className="flex items-center space-x-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                "flex-1 flex items-center justify-center py-8 border-dashed",
+                file ? "bg-blue-50" : ""
+              )}
+            >
+              {file ? (
+                <div className="text-center">
+                  <Image className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+                  <p className="text-sm text-gray-500">{file.name}</p>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <Upload className="h-6 w-6 mx-auto mb-2" />
+                  <p className="text-sm">
+                    {language === 'en' ? 'Click to select image' : 'انقر لاختيار الصورة'}
+                  </p>
+                </div>
+              )}
+            </Button>
+            <input
+              ref={fileInputRef}
+              id="gallery-file"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
         </div>
         
         <Button 
           type="submit" 
           disabled={isUploading || !file || !title.trim()}
-          className="flex items-center"
+          className="w-full flex items-center justify-center py-6"
         >
           {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isUploading 
@@ -131,7 +144,7 @@ export function GalleryUploadForm({ onItemAdded }: GalleryUploadFormProps) {
             : (
               <>
                 <Upload className="mr-2 h-4 w-4" />
-                {language === 'en' ? 'Upload Image' : 'رفع الصورة'}
+                {language === 'en' ? 'Upload to Gallery' : 'رفع إلى معرض الصور'}
               </>
             )
           }

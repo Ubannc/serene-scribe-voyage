@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState } from 'react';
 import { AdminLoginDialog } from './AdminLoginDialog';
+import { VisitorCounter } from './VisitorCounter';
 
 export function Header() {
   const { language, isRTL } = useLanguage();
@@ -19,6 +20,11 @@ export function Header() {
             M - thoughts
           </span>
         </Link>
+        
+        {/* Added visitor counter in the middle */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <VisitorCounter />
+        </div>
         
         <div className="flex items-center space-x-4">
           <Link to="/gallery">

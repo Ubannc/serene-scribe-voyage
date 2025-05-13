@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -6,6 +7,7 @@ import { ArticleCard } from '@/components/ArticleCard';
 import { fetchArticles, Article } from '@/lib/supabase';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Search } from 'lucide-react';
+import { AnimatedBackground } from '@/components/AnimatedBackground';
 
 const Index = () => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -44,10 +46,13 @@ const Index = () => {
   }, [searchQuery, articles]);
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      {/* Add the animated background */}
+      <AnimatedBackground />
+      
       <Header />
       
-      <main className="flex-grow container max-w-5xl mx-auto px-4 py-8 animate-fade-in">
+      <main className="flex-grow container max-w-5xl mx-auto px-4 py-8 animate-fade-in relative z-10">
         <div className="mb-12 text-center">
           <h1 className={`text-4xl font-medium mb-3 ${isRTL ? 'font-amiri' : 'font-serif'}`}>
             {language === 'en' ? 'Articles' : 'المقالات'}
@@ -92,6 +97,6 @@ const Index = () => {
       <Footer />
     </div>
   );
-};
+}
 
 export default Index;
