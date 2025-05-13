@@ -57,15 +57,15 @@
     @apply backdrop-blur-md bg-black/5 border border-black/10 shadow-sm;
   }
   
-  /* New mesomorphs glass effect */
+  /* Enhanced mesomorphs glass effect */
   .mesomorphs-glass {
-    @apply backdrop-blur-lg bg-white/40 border border-white/30 shadow-lg;
+    @apply backdrop-blur-lg bg-white/60 border border-white/40 shadow-lg;
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
     transition: all 0.3s ease;
   }
   
   .mesomorphs-glass:hover {
-    @apply bg-white/50;
+    @apply bg-white/70;
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.25);
   }
   

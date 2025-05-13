@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type LanguageType = 'en' | 'ar';
@@ -25,7 +24,7 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [language, setLanguageState] = useState<LanguageType>('ar'); // Changed default to Arabic
+  const [language, setLanguageState] = useState<LanguageType>('en'); // Changed default to English
   
   // Check if there's a saved language preference
   useEffect(() => {
@@ -33,19 +32,19 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'ar')) {
       setLanguageState(savedLanguage);
     } else {
-      // If no saved preference, set Arabic as default and save it
-      setLanguageState('ar');
-      localStorage.setItem('preferred-language', 'ar');
-      document.documentElement.dir = 'rtl';
-      document.documentElement.lang = 'ar';
+      // If no saved preference, set English as default and save it
+      setLanguageState('en');
+      localStorage.setItem('preferred-language', 'en');
+      document.documentElement.dir = 'ltr';
+      document.documentElement.lang = 'en';
     }
   }, []);
   
   const setLanguage = (lang: LanguageType) => {
     setLanguageState(lang);
     localStorage.setItem('preferred-language', lang);
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
+    // No longer changing document direction - we keep UI in English/LTR
+    // Only article content will be RTL when in Arabic
   };
   
   const toggleLanguage = () => {

@@ -6,8 +6,7 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { fetchArticleById, Article } from '@/lib/supabase';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Edit, Globe } from 'lucide-react';
+import { ArrowLeft, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ArticlePage = () => {
@@ -15,7 +14,6 @@ const ArticlePage = () => {
   const [article, setArticle] = useState<Article | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { language, isRTL, toggleLanguage } = useLanguage();
-  const { isAdmin } = useAuth();
   
   useEffect(() => {
     const loadArticle = async () => {
@@ -35,9 +33,7 @@ const ArticlePage = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow container max-w-3xl mx-auto px-4 py-16 flex items-center justify-center">
-          <p className={isRTL ? 'font-amiri' : 'font-serif'}>
-            {language === 'en' ? 'Loading article...' : 'جاري تحميل المقال...'}
-          </p>
+          <p className="font-serif">Loading article...</p>
         </main>
         <Footer />
       </div>
@@ -49,13 +45,11 @@ const ArticlePage = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow container max-w-3xl mx-auto px-4 py-16 flex flex-col items-center justify-center">
-          <h1 className={`text-2xl mb-4 ${isRTL ? 'font-amiri' : 'font-serif'}`}>
-            {language === 'en' ? 'Article not found' : 'لم يتم العثور على المقال'}
-          </h1>
+          <h1 className="text-2xl mb-4 font-serif">Article not found</h1>
           <Link to="/">
             <Button variant="outline">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {language === 'en' ? 'Back to articles' : 'العودة إلى المقالات'}
+              Back to articles
             </Button>
           </Link>
         </main>
@@ -74,7 +68,7 @@ const ArticlePage = () => {
   );
   
   return (
-    <div className="min-h-screen flex flex-col bg-[#FEF7CD]">
+    <div className="min-h-screen flex flex-col bg-white">
       <Header />
       
       <main className="flex-grow container max-w-3xl mx-auto px-4 py-12">
@@ -82,40 +76,33 @@ const ArticlePage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative bg-white rounded-lg shadow-lg p-8 md:p-12"
+          className="relative mesomorphs-glass p-8 md:p-12 rounded-lg"
+          style={{
+            boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
+            backdropFilter: 'blur(10px)',
+            background: 'rgba(255, 255, 255, 0.7)',
+            border: '1px solid rgba(255, 255, 255, 0.3)'
+          }}
         >
           <div className="mb-8 flex justify-between items-center">
             <Link to="/" className="inline-flex items-center text-sm mb-4 hover:text-primary transition-colors">
-              <ArrowLeft className={`h-4 w-4 ${isRTL ? 'ml-2 rotate-180' : 'mr-2'}`} />
-              <span className={isRTL ? 'font-amiri' : 'font-serif'}>
-                {language === 'en' ? 'Back to articles' : 'العودة إلى المقالات'}
-              </span>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              <span className="font-serif">Back to articles</span>
             </Link>
             
-            <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleLanguage}
-                className="flex items-center"
-              >
-                <Globe className="h-4 w-4 mr-1" />
-                {language === 'en' ? 'العربية' : 'English'}
-              </Button>
-              
-              {isAdmin && (
-                <Link to={`/admin/edit/${article.id}`}>
-                  <Button variant="outline" size="sm">
-                    <Edit className="h-4 w-4 mr-1" />
-                    {language === 'en' ? 'Edit' : 'تعديل'}
-                  </Button>
-                </Link>
-              )}
-            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleLanguage}
+              className="flex items-center"
+            >
+              <Globe className="h-4 w-4 mr-1" />
+              {language === 'en' ? 'العربية' : 'English'}
+            </Button>
           </div>
           
           <div className="mb-6 text-sm text-gray-500 border-b pb-4">
-            <time className={isRTL ? 'font-amiri' : 'font-serif'}>
+            <time className="font-serif">
               {formattedDate}
             </time>
           </div>

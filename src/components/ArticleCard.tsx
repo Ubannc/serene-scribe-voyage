@@ -14,11 +14,10 @@ export function ArticleCard({ article, index }: ArticleCardProps) {
   
   // Use the title based on the current language
   const title = language === 'en' ? article.title_en : article.title_ar;
-  const secondaryTitle = language === 'en' ? article.title_ar : article.title_en;
   
   // Format the date based on the language
   const formattedDate = new Date(article.created_at).toLocaleDateString(
-    language === 'en' ? 'en-US' : 'ar-SA',
+    'en-US',  // Always use English format for UI
     { year: 'numeric', month: 'long', day: 'numeric' }
   );
   
@@ -29,19 +28,19 @@ export function ArticleCard({ article, index }: ArticleCardProps) {
       transition={{ duration: 0.5, delay: index * 0.1 }}
     >
       <Link to={`/article/${article.id}`} className="block group">
-        <article className={`glass p-6 rounded-lg transition-all duration-300 hover:shadow-md ${isRTL ? 'text-right' : 'text-left'}`}>
+        <article className="glass p-6 rounded-lg transition-all duration-300 hover:shadow-md text-left">
           <div className="mb-3 opacity-60 text-sm">
-            <time className={isRTL ? 'font-amiri' : 'font-serif'}>
+            <time className="font-serif">
               {formattedDate}
             </time>
           </div>
           
-          <h2 className={`text-2xl mb-2 group-hover:text-primary transition-colors ${isRTL ? 'font-amiri' : 'font-serif'}`}>
+          <h2 className="text-2xl mb-2 group-hover:text-primary transition-colors font-serif">
             {title}
           </h2>
           
-          <p className={`text-sm opacity-70 ${isRTL ? 'font-amiri' : 'font-sans'}`}>
-            {secondaryTitle}
+          <p className="text-sm opacity-70 font-sans">
+            {article.content_en.replace(/<[^>]*>/g, '').substring(0, 120)}...
           </p>
         </article>
       </Link>

@@ -8,15 +8,15 @@ import { AdminLoginDialog } from './AdminLoginDialog';
 import { VisitorCounter } from './VisitorCounter';
 
 export function Header() {
-  const { language, isRTL } = useLanguage();
+  const { language } = useLanguage();
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   
   return (
-    <header className="w-full py-6 px-4 md:px-8 glass animate-fade-in">
+    <header className="w-full py-6 px-4 md:px-8 backdrop-blur-sm bg-white/30 border-b border-white/10 animate-fade-in z-20 sticky top-0">
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
           <Pen className="h-6 w-6" />
-          <span className={`text-xl font-medium ${isRTL ? 'mr-2 font-amiri' : 'ml-2 font-serif'}`}>
+          <span className="text-xl font-medium ml-2 font-serif">
             M - thoughts
           </span>
         </Link>
@@ -33,7 +33,7 @@ export function Header() {
               className="text-sm font-medium hover:bg-black/5 flex items-center"
             >
               <Image className="h-4 w-4 mr-1" />
-              {language === 'en' ? 'Gallery' : 'معرض الصور'}
+              Gallery
             </Button>
           </Link>
           

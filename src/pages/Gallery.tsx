@@ -7,11 +7,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { AnimatedBackground } from '@/components/AnimatedBackground';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function Gallery() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { language, isRTL } = useLanguage();
+  const { language } = useLanguage();
   
   useEffect(() => {
     const loadGallery = async () => {
@@ -24,8 +26,18 @@ export default function Gallery() {
     loadGallery();
   }, []);
   
+  const handleDownload = (imageUrl: string, title: string) => {
+    // Create a download link and trigger it
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = `${title.replace(/\s+/g, '-').toLowerCase()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
   return (
-    <div className={`min-h-screen ${isRTL ? 'ar' : 'en'}`}>
+    <div className="min-h-screen en">
       <AnimatedBackground />
       <Header />
       
@@ -33,9 +45,9 @@ export default function Gallery() {
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`text-4xl mb-8 font-bold text-center ${isRTL ? 'font-amiri' : 'font-serif'}`}
+          className="text-4xl mb-8 font-bold text-center font-serif"
         >
-          {language === 'en' ? 'Image Gallery' : 'معرض الصور'}
+          Image Gallery
         </motion.h1>
         
         {isLoading ? (
@@ -44,8 +56,8 @@ export default function Gallery() {
           </div>
         ) : galleryItems.length === 0 ? (
           <div className="text-center py-16">
-            <p className={`text-lg opacity-70 ${isRTL ? 'font-amiri' : 'font-serif'}`}>
-              {language === 'en' ? 'No images in the gallery yet.' : 'لا توجد صور في المعرض بعد.'}
+            <p className="text-lg opacity-70 font-serif">
+              No images in the gallery yet.
             </p>
           </div>
         ) : (
@@ -56,7 +68,7 @@ export default function Gallery() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass rounded-lg overflow-hidden hover:scale-105 transition-transform"
+                className="mesomorphs-glass rounded-lg overflow-hidden hover:scale-105 transition-transform"
               >
                 <div className="relative">
                   <AspectRatio ratio={16/9} className="bg-gray-100">
@@ -66,9 +78,18 @@ export default function Gallery() {
                       className="w-full h-full object-cover"
                     />
                   </AspectRatio>
+                  <Button 
+                    size="sm"
+                    variant="secondary"
+                    className="absolute bottom-2 right-2 opacity-80 hover:opacity-100"
+                    onClick={() => handleDownload(item.url, item.title)}
+                  >
+                    <Download className="h-4 w-4 mr-1" />
+                    Download
+                  </Button>
                 </div>
                 <div className="p-4">
-                  <h3 className={`${isRTL ? 'font-amiri text-right' : 'font-serif'} text-xl`}>
+                  <h3 className="font-serif text-xl">
                     {item.title}
                   </h3>
                 </div>
