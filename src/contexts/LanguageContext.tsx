@@ -25,13 +25,19 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [language, setLanguageState] = useState<LanguageType>('en');
+  const [language, setLanguageState] = useState<LanguageType>('ar'); // Changed default to Arabic
   
   // Check if there's a saved language preference
   useEffect(() => {
     const savedLanguage = localStorage.getItem('preferred-language') as LanguageType;
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'ar')) {
       setLanguageState(savedLanguage);
+    } else {
+      // If no saved preference, set Arabic as default and save it
+      setLanguageState('ar');
+      localStorage.setItem('preferred-language', 'ar');
+      document.documentElement.dir = 'rtl';
+      document.documentElement.lang = 'ar';
     }
   }, []);
   
