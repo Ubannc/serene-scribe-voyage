@@ -2,9 +2,21 @@
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/integrations/supabase/client';
 
+// This function is kept for backward compatibility but is no longer needed
+// It will always return false, as we've moved to Supabase authentication
 export async function verifyAdminToken(token: string): Promise<boolean> {
-  // In a real implementation, this would verify against a secure token in Supabase
-  // For this demo, we'll use the hardcoded token from the requirements
-  const validToken = '85JpSoF5cc030g9e8GeC';
-  return token === validToken;
+  console.log('Token-based auth is deprecated, using Supabase authentication instead');
+  return false;
+}
+
+// Helper function to get the current user
+export async function getCurrentUser() {
+  const { data } = await supabase.auth.getUser();
+  return data.user;
+}
+
+// Helper function to check if a user is authenticated
+export async function isAuthenticated(): Promise<boolean> {
+  const { data } = await supabase.auth.getSession();
+  return !!data.session;
 }

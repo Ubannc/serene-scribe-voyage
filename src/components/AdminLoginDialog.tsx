@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Label } from '@/components/ui/label';
 
 interface AdminLoginDialogProps {
   open: boolean;
@@ -14,20 +15,26 @@ interface AdminLoginDialogProps {
 }
 
 export function AdminLoginDialog({ open, onOpenChange }: AdminLoginDialogProps) {
-  const [token, setToken] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const { language } = useLanguage();
   
   const handleLogin = async () => {
-    if (!token.trim()) {
-      toast.error(language === 'en' ? 'Please enter an access token' : 'يرجى إدخال رمز الوصول');
+    if (!email.trim()) {
+      toast.error(language === 'en' ? 'Please enter an email address' : 'يرجى إدخال عنوان البريد الإلكتروني');
+      return;
+    }
+    
+    if (!password.trim()) {
+      toast.error(language === 'en' ? 'Please enter a password' : 'يرجى إدخال كلمة المرور');
       return;
     }
     
     setIsLoading(true);
-    const success = await login(token);
+    const success = await login(email, password);
     setIsLoading(false);
     
     if (success) {
@@ -35,7 +42,7 @@ export function AdminLoginDialog({ open, onOpenChange }: AdminLoginDialogProps) 
       onOpenChange(false);
       navigate('/admin');
     } else {
-      toast.error(language === 'en' ? 'Invalid access token' : 'رمز الوصول غير صالح');
+      toast.error(language === 'en' ? 'Invalid credentials' : 'بيانات الاعتماد غير صالحة');
     }
   };
   
@@ -49,13 +56,28 @@ export function AdminLoginDialog({ open, onOpenChange }: AdminLoginDialogProps) 
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div className="space-y-2">
-            <label className={`block text-sm ${language === 'ar' ? 'font-amiri text-right' : 'font-serif'}`}>
-              {language === 'en' ? 'Enter Access Token' : 'أدخل رمز الوصول'}
-            </label>
+            <Label className={`block text-sm ${language === 'ar' ? 'font-amiri text-right' : 'font-serif'}`}>
+              {language === 'en' ? 'Email' : 'البريد الإلكتروني'}
+            </Label>
             <Input
-              placeholder={language === 'en' ? 'Enter your access token' : 'أدخل رمز الوصول الخاص بك'}
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
+              type="email"
+              placeholder={language === 'en' ? 'Enter your email' : 'أدخل بريدك الإلكتروني'}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`bg-white/50 ${language === 'ar' ? 'text-right font-amiri' : ''}`}
+              dir={language === 'ar' ? 'rtl' : 'ltr'}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label className={`block text-sm ${language === 'ar' ? 'font-amiri text-right' : 'font-serif'}`}>
+              {language === 'en' ? 'Password' : 'كلمة المرور'}
+            </Label>
+            <Input
+              type="password"
+              placeholder={language === 'en' ? 'Enter your password' : 'أدخل كلمة المرور'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className={`bg-white/50 ${language === 'ar' ? 'text-right font-amiri' : ''}`}
               dir={language === 'ar' ? 'rtl' : 'ltr'}
             />

@@ -14,7 +14,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   
   useEffect(() => {
     if (!isLoading && !isAdmin) {
-      toast.error('Unauthorized access. Please log in.');
+      toast.error('Unauthorized access. Please log in as an administrator.');
     }
   }, [isAdmin, isLoading, navigate]);
   
