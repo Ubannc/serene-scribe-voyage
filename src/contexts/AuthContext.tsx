@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { verifyAdminToken } from '@/lib/supabase';
+import { verifyAdminToken } from '@/lib/auth';
 
 interface AuthContextType {
   isAdmin: boolean;
@@ -30,10 +30,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Check if there's a token in localStorage
     const checkAuth = async () => {
+      console.log("Checking admin authentication");
       const token = localStorage.getItem('admin-token');
       if (token) {
+        console.log("Admin token found, verifying...");
         const isValid = await verifyAdminToken(token);
+        console.log("Token valid:", isValid);
         setIsAdmin(isValid);
+      } else {
+        console.log("No admin token found");
       }
       setIsLoading(false);
     };
@@ -42,21 +47,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const login = async (token: string): Promise<boolean> => {
+    console.log("Login attempt with token");
     setIsLoading(true);
     const isValid = await verifyAdminToken(token);
     
     if (isValid) {
+      console.log("Token is valid, setting admin status to true");
       localStorage.setItem('admin-token', token);
       setIsAdmin(true);
       setIsLoading(false);
       return true;
     }
     
+    console.log("Token is invalid");
     setIsLoading(false);
     return false;
   };
 
   const logout = () => {
+    console.log("Logging out, removing admin token");
     localStorage.removeItem('admin-token');
     setIsAdmin(false);
   };

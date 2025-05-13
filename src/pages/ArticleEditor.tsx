@@ -28,7 +28,7 @@ const ArticleEditor = () => {
     content_ar: '',
   });
   const [publishDate, setPublishDate] = useState<Date | undefined>(new Date());
-  const [isLoading, setIsLoading] = useState(!isNewArticle);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Changed initial state to false
   const [isSaving, setIsSaving] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const { language, isRTL } = useLanguage();
@@ -36,6 +36,9 @@ const ArticleEditor = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
+    // Debugging
+    console.log("ArticleEditor mounting, isNewArticle:", isNewArticle, "id:", id);
+    
     // Redirect if not admin
     if (!isAdmin) {
       navigate('/');
@@ -44,7 +47,8 @@ const ArticleEditor = () => {
     
     const loadArticle = async () => {
       if (isNewArticle) {
-        // Fix: Ensure loading state is false for new articles
+        // Ensure loading state is false for new articles
+        console.log("New article: Setting loading state to false");
         setIsLoading(false);
         return;
       }
@@ -52,17 +56,28 @@ const ArticleEditor = () => {
       if (!id) return;
       
       setIsLoading(true);
-      const data = await fetchArticleById(id);
-      if (data) {
-        setArticle(data);
-        // You would set the publish date here if it exists in your data model
-        // setPublishDate(data.publish_date ? new Date(data.publish_date) : undefined);
-        // setIsPublished(!!data.is_published);
-      } else {
-        toast.error(language === 'en' ? 'Article not found' : 'لم يتم العثور على المقال');
+      console.log("Fetching article with id:", id);
+      
+      try {
+        const data = await fetchArticleById(id);
+        if (data) {
+          console.log("Article fetched successfully:", data);
+          setArticle(data);
+          // You would set the publish date here if it exists in your data model
+          // setPublishDate(data.publish_date ? new Date(data.publish_date) : undefined);
+          // setIsPublished(!!data.is_published);
+        } else {
+          console.error("Article not found for ID:", id);
+          toast.error(language === 'en' ? 'Article not found' : 'لم يتم العثور على المقال');
+          navigate('/admin');
+        }
+      } catch (error) {
+        console.error("Error fetching article:", error);
+        toast.error(language === 'en' ? 'Error loading article' : 'خطأ في تحميل المقال');
         navigate('/admin');
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     
     loadArticle();
@@ -75,29 +90,44 @@ const ArticleEditor = () => {
     }
     
     setIsSaving(true);
-    const savedArticle = await createOrUpdateArticle({
-      ...article,
-      id: isNewArticle ? undefined : id,
-      // Add publish date and published status when your backend supports it
-      // publish_date: publishDate?.toISOString(),
-      // is_published: isPublished
-    });
-    setIsSaving(false);
+    console.log("Saving article:", article);
     
-    if (savedArticle) {
-      toast.success(language === 'en' ? 'Article saved successfully' : 'تم حفظ المقال بنجاح');
-      if (isNewArticle) {
-        navigate(`/admin/edit/${savedArticle.id}`);
+    try {
+      const savedArticle = await createOrUpdateArticle({
+        ...article,
+        id: isNewArticle ? undefined : id,
+        // Add publish date and published status when your backend supports it
+        // publish_date: publishDate?.toISOString(),
+        // is_published: isPublished
+      });
+      
+      if (savedArticle) {
+        console.log("Article saved successfully:", savedArticle);
+        toast.success(language === 'en' ? 'Article saved successfully' : 'تم حفظ المقال بنجاح');
+        if (isNewArticle) {
+          navigate(`/admin/edit/${savedArticle.id}`);
+        }
+      } else {
+        console.error("Failed to save article, no response returned");
+        toast.error(language === 'en' ? 'Failed to save article' : 'فشل حفظ المقال');
       }
+    } catch (error) {
+      console.error("Error saving article:", error);
+      toast.error(language === 'en' ? 'Error saving article' : 'خطأ في حفظ المقال');
+    } finally {
+      setIsSaving(false);
     }
   };
   
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className={isRTL ? 'font-amiri' : 'font-serif'}>
-          {language === 'en' ? 'Loading article...' : 'جاري تحميل المقال...'}
-        </p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className={isRTL ? 'font-amiri' : 'font-serif'}>
+            {language === 'en' ? 'Loading article...' : 'جاري تحميل المقال...'}
+          </p>
+        </div>
       </div>
     );
   }

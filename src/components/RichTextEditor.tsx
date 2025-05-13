@@ -38,19 +38,34 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     'link', 'image'
   ];
 
-  return (
-    <div className="rich-text-editor" dir={dir}>
-      <ReactQuill
-        theme="snow"
+  // Use a try-catch block to handle any potential rendering errors
+  try {
+    return (
+      <div className="rich-text-editor" dir={dir}>
+        <ReactQuill
+          theme="snow"
+          value={value}
+          onChange={onChange}
+          modules={modules}
+          formats={formats}
+          placeholder={placeholder || (dir === 'rtl' ? 'اكتب هنا...' : 'Write something...')}
+          className={`min-h-[400px] ${dir === 'rtl' ? 'text-right font-amiri' : 'text-left font-serif'}`}
+        />
+      </div>
+    );
+  } catch (error) {
+    console.error("Error rendering RichTextEditor:", error);
+    // Fallback to a simple textarea if ReactQuill fails
+    return (
+      <textarea
         value={value}
-        onChange={onChange}
-        modules={modules}
-        formats={formats}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder || (dir === 'rtl' ? 'اكتب هنا...' : 'Write something...')}
-        className={`min-h-[400px] ${dir === 'rtl' ? 'text-right font-amiri' : 'text-left font-serif'}`}
+        className={`w-full min-h-[400px] p-4 border rounded ${dir === 'rtl' ? 'text-right font-amiri' : 'text-left font-serif'}`}
+        dir={dir}
       />
-    </div>
-  );
+    );
+  }
 };
 
 export default RichTextEditor;

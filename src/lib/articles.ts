@@ -6,6 +6,7 @@ import { Article, DbArticle } from './types';
 // Helper functions for articles
 export async function fetchArticles(includeUnpublished: boolean = false): Promise<Article[]> {
   try {
+    console.log('Fetching articles from database');
     // Use explicit typing to avoid excessive type instantiation
     const { data, error } = await supabase
       .from('articles')
@@ -18,6 +19,7 @@ export async function fetchArticles(includeUnpublished: boolean = false): Promis
       return [];
     }
     
+    console.log('Articles fetched successfully:', data?.length || 0);
     // Map the database schema to our frontend Article type
     return (data || []).map(article => mapDbArticleToArticle(article));
   } catch (error) {
@@ -29,6 +31,7 @@ export async function fetchArticles(includeUnpublished: boolean = false): Promis
 
 export async function fetchArticleById(id: string): Promise<Article | null> {
   try {
+    console.log('Fetching article by ID:', id);
     const { data, error } = await supabase
       .from('articles')
       .select('*')
@@ -41,8 +44,12 @@ export async function fetchArticleById(id: string): Promise<Article | null> {
       return null;
     }
     
-    if (!data) return null;
+    if (!data) {
+      console.log('No article found with ID:', id);
+      return null;
+    }
     
+    console.log('Article fetched successfully:', data);
     // Map the database schema to our frontend Article type
     return mapDbArticleToArticle(data);
   } catch (error) {
@@ -59,6 +66,7 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
     
     if (article.id) {
       // Update existing article
+      console.log('Updating existing article with ID:', article.id);
       const { data, error } = await supabase
         .from('articles')
         .update({
@@ -80,11 +88,13 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
         return null;
       }
       
+      console.log('Article updated successfully:', data);
       toast.success('Article updated successfully');
       // Return the updated article with our frontend Article type structure
       return mapDbArticleToArticle(data);
     } else {
       // Create new article
+      console.log('Creating new article');
       const { data, error } = await supabase
         .from('articles')
         .insert([
@@ -108,6 +118,7 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
         return null;
       }
       
+      console.log('Article created successfully:', data);
       toast.success('Article created successfully');
       // Return the created article with our frontend Article type structure
       return mapDbArticleToArticle(data);
@@ -121,6 +132,7 @@ export async function createOrUpdateArticle(article: Partial<Article>): Promise<
 
 export async function deleteArticle(id: string): Promise<boolean> {
   try {
+    console.log('Deleting article with ID:', id);
     const { error } = await supabase
       .from('articles')
       .delete()
@@ -132,6 +144,7 @@ export async function deleteArticle(id: string): Promise<boolean> {
       return false;
     }
     
+    console.log('Article deleted successfully');
     toast.success('Article deleted successfully');
     return true;
   } catch (error) {
