@@ -1,14 +1,11 @@
-
 import { Pen, Image, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useState } from 'react';
 import { AdminLoginDialog } from './AdminLoginDialog';
 import { VisitorCounter } from './VisitorCounter';
 
 export function Header() {
-  const { language } = useLanguage();
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   
   return (
@@ -17,11 +14,10 @@ export function Header() {
         <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
           <Pen className="h-6 w-6" />
           <span className="text-xl font-medium ml-2 font-serif">
-            M - thoughts
+            Aporia
           </span>
         </Link>
         
-        {/* Added visitor counter in the middle */}
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <VisitorCounter />
         </div>

@@ -1,9 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { fetchGalleryItems, GalleryItem } from '@/lib/supabase';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { AnimatedBackground } from '@/components/AnimatedBackground';
@@ -13,7 +11,6 @@ import { Button } from '@/components/ui/button';
 export default function Gallery() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { language } = useLanguage();
   
   useEffect(() => {
     const loadGallery = async () => {
@@ -27,7 +24,6 @@ export default function Gallery() {
   }, []);
   
   const handleDownload = (imageUrl: string, title: string) => {
-    // Create a download link and trigger it
     const link = document.createElement('a');
     link.href = imageUrl;
     link.download = `${title.replace(/\s+/g, '-').toLowerCase()}.jpg`;
@@ -90,8 +86,8 @@ export default function Gallery() {
                     </Button>
                   </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="font-serif text-xl">
+                <div className="absolute inset-x-0 bottom-0 p-4 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h3 className="font-serif text-white text-center">
                     {item.title}
                   </h3>
                 </div>
